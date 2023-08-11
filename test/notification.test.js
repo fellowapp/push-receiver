@@ -1,25 +1,25 @@
-const request = require('request-promise');
+const fetch = require('node-fetch');
 const { SENDER_ID, SERVER_KEY } = require('./keys');
 const { register, listen } = require('../src/index');
 
 const NOTIFICATIONS = {
-  SIMPLE : { title : 'Hello world ', body : 'Test' },
-  LARGE  : { title : 'Hello world ', body : require('./4kb') },
+  SIMPLE: { title: 'Hello world ', body: 'Test' },
+  LARGE: { title: 'Hello world ', body: require('./4kb') },
 };
 
 let credentials;
 let client;
-describe('Parser', function() {
-  beforeEach(async function() {
+describe('Parser', function () {
+  beforeEach(async function () {
     credentials = await register(SENDER_ID);
   });
 
-  afterEach(async function() {
+  afterEach(async function () {
     client.destroy();
     credentials = null;
   });
 
-  it('should receive a simple notification', async function() {
+  it('should receive a simple notification', async function () {
     await send(NOTIFICATIONS.SIMPLE);
     const notifications = await receive(1);
     expect(notifications.length).toEqual(1);
@@ -28,7 +28,7 @@ describe('Parser', function() {
     );
   });
 
-  it('should receive a large notification', async function() {
+  it('should receive a large notification', async function () {
     await send(NOTIFICATIONS.LARGE);
     const notifications = await receive(1);
     expect(notifications.length).toEqual(1);
@@ -37,7 +37,7 @@ describe('Parser', function() {
     );
   });
 
-  it('should receive multiple notifications', async function() {
+  it('should receive multiple notifications', async function () {
     await send(NOTIFICATIONS.SIMPLE);
     await send(NOTIFICATIONS.LARGE);
     await send(NOTIFICATIONS.SIMPLE);
@@ -57,15 +57,16 @@ describe('Parser', function() {
 });
 
 async function send(notification) {
-  const response = await request({
-    method : 'POST',
-    url    : 'https://fcm.googleapis.com/fcm/send',
-    json   : true,
-    body   : {
-      to           : credentials.fcm.token,
-      notification : notification,
+  const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+    method: 'POST',
+    body: JSON.stringify({
+      to: credentials.fcm.token,
+      notification: notification,
+    }),
+    headers: {
+      Authorization: `key=${SERVER_KEY}`,
+      'content-type': 'application/json',
     },
-    headers : { Authorization : `key=${SERVER_KEY}` },
   });
   try {
     expect(response.success).toEqual(1);
@@ -79,8 +80,8 @@ async function send(notification) {
 
 async function receive(n) {
   const received = [];
-  return new Promise(async resolve => {
-    const onNotification = notification => {
+  return new Promise(async (resolve) => {
+    const onNotification = (notification) => {
       received.push(notification);
       if (received.length === n) {
         resolve(received);

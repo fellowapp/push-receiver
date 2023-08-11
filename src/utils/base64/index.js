@@ -4,10 +4,7 @@ module.exports = {
 };
 
 function escape(string) {
-  return string
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_');
+  return string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 }
 
 function toBase64(input) {

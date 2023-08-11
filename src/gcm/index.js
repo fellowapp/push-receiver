@@ -1,5 +1,5 @@
 const path = require('path');
-const request = require('../utils/request');
+const fetch = require('../utils/fetch');
 const protobuf = require('protobufjs');
 const Long = require('long');
 const { waitFor } = require('../utils/timeout');
@@ -8,8 +8,8 @@ const { toBase64 } = require('../utils/base64');
 
 // Hack to fix PHONE_REGISTRATION_ERROR #17 when bundled with webpack
 // https://github.com/dcodeIO/protobuf.js#browserify-integration
-protobuf.util.Long = Long
-protobuf.configure()
+protobuf.util.Long = Long;
+protobuf.configure();
 
 const serverKey = toBase64(Buffer.from(fcmKey));
 
@@ -33,30 +33,30 @@ async function register(appId) {
 async function checkIn(androidId, securityToken) {
   await loadProtoFile();
   const buffer = getCheckinRequest(androidId, securityToken);
-  const body = await request({
-    url     : CHECKIN_URL,
-    method  : 'POST',
-    headers : {
-      'Content-Type' : 'application/x-protobuf',
+
+  const response = await fetch(CHECKIN_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-protobuf',
     },
-    body     : buffer,
-    encoding : null,
+    body: buffer,
   });
-  const message = AndroidCheckinResponse.decode(body);
+
+  const message = AndroidCheckinResponse.decode(response.body);
   const object = AndroidCheckinResponse.toObject(message, {
-    longs : String,
-    enums : String,
-    bytes : String,
+    longs: String,
+    enums: String,
+    bytes: String,
   });
   return object;
 }
 
 async function doRegister({ androidId, securityToken }, appId) {
   const body = {
-    app         : 'org.chromium.linux',
-    'X-subtype' : appId,
-    device      : androidId,
-    sender      : serverKey,
+    app: 'org.chromium.linux',
+    'X-subtype': appId,
+    device: androidId,
+    sender: serverKey,
   };
   const response = await postRegister({ androidId, securityToken, body });
   const token = response.split('=')[1];
@@ -69,14 +69,13 @@ async function doRegister({ androidId, securityToken }, appId) {
 }
 
 async function postRegister({ androidId, securityToken, body, retry = 0 }) {
-  const response = await request({
-    url     : REGISTER_URL,
-    method  : 'POST',
-    headers : {
-      Authorization  : `AidLogin ${androidId}:${securityToken}`,
-      'Content-Type' : 'application/x-www-form-urlencoded',
+  const response = await fetch(REGISTER_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `AidLogin ${androidId}:${securityToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
-    form : body,
+    form: body,
   });
   if (response.includes('Error')) {
     console.warn(`Register request has failed with ${response}`);
@@ -85,7 +84,7 @@ async function postRegister({ androidId, securityToken, body, retry = 0 }) {
     }
     console.warn(`Retry... ${retry + 1}`);
     await waitFor(1000);
-    return postRegister({ androidId, securityToken, body, retry : retry + 1 });
+    return postRegister({ androidId, securityToken, body, retry: retry + 1 });
   }
   return response;
 }
@@ -106,18 +105,18 @@ function getCheckinRequest(androidId, securityToken) {
     'checkin_proto.AndroidCheckinResponse'
   );
   const payload = {
-    userSerialNumber : 0,
-    checkin          : {
-      type        : 3,
-      chromeBuild : {
-        platform      : 2,
-        chromeVersion : '63.0.3234.0',
-        channel       : 1,
+    userSerialNumber: 0,
+    checkin: {
+      type: 3,
+      chromeBuild: {
+        platform: 2,
+        chromeVersion: '63.0.3234.0',
+        channel: 1,
       },
     },
-    version       : 3,
-    id            : androidId ? Long.fromString(androidId) : undefined,
-    securityToken : securityToken
+    version: 3,
+    id: androidId ? Long.fromString(androidId) : undefined,
+    securityToken: securityToken
       ? Long.fromString(securityToken, true)
       : undefined,
   };

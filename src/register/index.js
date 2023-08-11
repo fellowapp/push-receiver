@@ -9,10 +9,10 @@ async function register(senderId) {
   const appId = `wp:receiver.push.com#${uuidv4()}`;
   const subscription = await registerGCM(appId);
   const result = await registerFCM({
-    token : subscription.token,
+    token: subscription.token,
     senderId,
     appId,
   });
   // Need to be saved by the client
-  return Object.assign({}, result, { gcm : subscription });
+  return Object.assign({}, result, { gcm: subscription });
 }

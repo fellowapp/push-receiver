@@ -74,7 +74,7 @@ module.exports = class Client extends EventEmitter {
     this._socket.on('connect', this._onSocketConnect);
     this._socket.on('close', this._onSocketClose);
     this._socket.on('error', this._onSocketError);
-    this._socket.connect({ host : HOST, port : PORT });
+    this._socket.connect({ host: HOST, port: PORT });
     this._socket.write(this._loginBuffer());
   }
 
@@ -101,20 +101,20 @@ module.exports = class Client extends EventEmitter {
       this._credentials.gcm.androidId
     ).toString(16);
     const loginRequest = {
-      adaptiveHeartbeat    : false,
-      authService          : 2,
-      authToken            : this._credentials.gcm.securityToken,
-      id                   : 'chrome-63.0.3234.0',
-      domain               : 'mcs.android.com',
-      deviceId             : `android-${hexAndroidId}`,
-      networkType          : 1,
-      resource             : this._credentials.gcm.androidId,
-      user                 : this._credentials.gcm.androidId,
-      useRmq2              : true,
-      setting              : [{ name : 'new_vc', value : '1' }],
+      adaptiveHeartbeat: false,
+      authService: 2,
+      authToken: this._credentials.gcm.securityToken,
+      id: 'chrome-63.0.3234.0',
+      domain: 'mcs.android.com',
+      deviceId: `android-${hexAndroidId}`,
+      networkType: 1,
+      resource: this._credentials.gcm.androidId,
+      user: this._credentials.gcm.androidId,
+      useRmq2: true,
+      setting: [{ name: 'new_vc', value: '1' }],
       // Id of the last notification received
-      clientEvent          : [],
-      receivedPersistentId : this._persistentIds,
+      clientEvent: [],
+      receivedPersistentId: this._persistentIds,
     };
 
     const errorMessage = LoginRequestType.verify(loginRequest);
@@ -136,7 +136,7 @@ module.exports = class Client extends EventEmitter {
   }
 
   _onSocketClose() {
-    this.emit('disconnect')
+    this.emit('disconnect');
     this._retry();
   }
 
@@ -197,9 +197,9 @@ module.exports = class Client extends EventEmitter {
     this._persistentIds.push(object.persistentId);
     // Send notification
     this.emit('ON_NOTIFICATION_RECEIVED', {
-      notification : message,
+      notification: message,
       // Needs to be saved by the client
-      persistentId : object.persistentId,
+      persistentId: object.persistentId,
     });
   }
 };

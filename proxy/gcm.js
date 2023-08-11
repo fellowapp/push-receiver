@@ -10,12 +10,12 @@ const HOST = 'https://216.58.198.206';
 let root;
 
 const options = {
-  key  : fs.readFileSync(path.join(__dirname, 'android_key.pem')),
-  cert : fs.readFileSync(path.join(__dirname, 'android_cert.pem')),
+  key: fs.readFileSync(path.join(__dirname, 'android_key.pem')),
+  cert: fs.readFileSync(path.join(__dirname, 'android_cert.pem')),
 };
 
 proxy.on('proxyRes', (proxyRes, req) => {
-  proxyRes.on('data', data => {
+  proxyRes.on('data', (data) => {
     info('REQUEST RESPONSE :');
     try {
       if (req.url === '/checkin') {
@@ -37,7 +37,7 @@ proxy.on('proxyRes', (proxyRes, req) => {
 https
   .createServer(options, (req, res) => {
     console.log(req.url);
-    req.on('data', data => {
+    req.on('data', (data) => {
       info('REQUEST DATA :');
       try {
         if (req.url === '/checkin') {
@@ -53,12 +53,12 @@ https
       }
       //logBuffer(data);
     });
-    proxy.web(req, res, { target : HOST });
+    proxy.web(req, res, { target: HOST });
   })
   .listen(443);
 
 loadProtoFile()
-  .then(r => (root = r))
+  .then((r) => (root = r))
   .catch(console.error);
 
 function loadProtoFile() {

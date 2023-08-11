@@ -1,5 +1,5 @@
-const request = require('request-promise');
 const argv = require('yargs').argv;
+const fetch = require('node-fetch');
 
 const serverKey = argv.serverKey;
 const token = argv.token;
@@ -16,19 +16,18 @@ if (!token) {
 
 (async () => {
   try {
-    const response = await request({
-      method : 'POST',
-      url    : 'https://fcm.googleapis.com/fcm/send',
-      json   : true,
-      body   : {
-        to           : token,
-        notification : {
-          title : 'Hello world',
-          body  : 'Test',
+    const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      body: JSON.stringify({
+        to: token,
+        notification: {
+          title: 'Hello world',
+          body: 'Test',
         },
-      },
-      headers : {
-        Authorization : `key=${serverKey}`,
+      }),
+      headers: {
+        Authorization: `key=${serverKey}`,
+        'Content-Type': 'application/json',
       },
     });
     console.log(response);
