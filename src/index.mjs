@@ -1,12 +1,7 @@
-const register = require('./register');
-const Client = require('./client.js');
+export * from './register';
+import Client from './client.js';
 
-module.exports = {
-  listen,
-  register,
-};
-
-async function listen(credentials, notificationCallback) {
+export async function listen(credentials, notificationCallback) {
   if (!credentials) {
     throw new Error('Missing credentials');
   }

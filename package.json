@@ -2,20 +2,20 @@
   "name": "push-receiver",
   "version": "2.1.1",
   "description": "A module to subscribe to GCM/FCM and receive notifications within a node process.",
-  "main": "src/index.js",
+  "exports": "./src/index.mjs",
   "scripts": {
     "start": "node scripts/listen",
     "register": "node scripts/register",
     "send": "node scripts/send",
-    "pretty": "prettier-eslint --single-quote --trailing-comma es5 --write '**/*.js'",
-    "pretty:check": "prettier-eslint --single-quote --trailing-comma es5 --list-different --log-level silent \"**/*.js\" \"**/*.json\"",
-    "lint": "eslint 'src/**/*.js'",
-    "lint:fix": "eslint 'src/**/*.js' --fix",
+    "pretty": "prettier-eslint --single-quote --trailing-comma es5 --write '**/*.mjs'",
+    "pretty:check": "prettier-eslint --single-quote --trailing-comma es5 --list-different --log-level silent \"**/*.mjs\" \"**/*.json\"",
+    "lint": "eslint 'src/**/*.mjs'",
+    "lint:fix": "eslint 'src/**/*.mjs' --fix",
     "test": "jest",
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.js": [
+    "*.mjs": [
       "eslint --fix",
       "prettier-eslint --single-quote --trailing-comma es5 --write"
     ],

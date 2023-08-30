@@ -1,17 +1,15 @@
-const EventEmitter = require('events');
-const path = require('path');
-const { load, BufferReader } = require('protobufjs');
-const {
+import EventEmitter from 'events';
+import path from 'path';
+import { load, BufferReader } from 'protobufjs';
+import {
   MCS_VERSION_TAG_AND_SIZE,
   MCS_TAG_AND_SIZE,
   MCS_SIZE,
   MCS_PROTO_BYTES,
-
   kVersionPacketLen,
   kTagPacketLen,
   kSizePacketLenMin,
   kMCSVersion,
-
   kHeartbeatPingTag,
   kHeartbeatAckTag,
   kLoginRequestTag,
@@ -20,7 +18,7 @@ const {
   kIqStanzaTag,
   kDataMessageStanzaTag,
   kStreamErrorStanzaTag,
-} = require('./constants');
+} from './constants.mjs';
 
 const DEBUG = () => {};
 // uncomment the line below to output debug messages
@@ -38,7 +36,7 @@ let proto = null;
 // - Setting timeouts while waiting for data
 //
 // ref: https://cs.chromium.org/chromium/src/google_apis/gcm/engine/connection_handler_impl.cc?rcl=dc7c41bc0ee5fee0ed269495dde6b8c40df43e40&l=178
-module.exports = class Parser extends EventEmitter {
+export default class Parser extends EventEmitter {
   static async init() {
     if (proto) {
       return;
@@ -205,7 +203,7 @@ module.exports = class Parser extends EventEmitter {
     // Messages with no content are valid; just use the default protobuf for
     // that tag.
     if (this._messageSize === 0) {
-      this.emit('message', { tag: this._messageTag, object: {} });
+      this.emit('message', { tag : this._messageTag, object : {} });
       this._getNextMessage();
       return;
     }
@@ -224,12 +222,12 @@ module.exports = class Parser extends EventEmitter {
     this._data = this._data.slice(this._messageSize);
     const message = protobuf.decode(buffer);
     const object = protobuf.toObject(message, {
-      longs: String,
-      enums: String,
-      bytes: Buffer,
+      longs : String,
+      enums : String,
+      bytes : Buffer,
     });
 
-    this.emit('message', { tag: this._messageTag, object: object });
+    this.emit('message', { tag : this._messageTag, object : object });
 
     if (this._messageTag === kLoginResponseTag) {
       if (this._handshakeComplete) {
@@ -272,4 +270,4 @@ module.exports = class Parser extends EventEmitter {
         return null;
     }
   }
-};
+}

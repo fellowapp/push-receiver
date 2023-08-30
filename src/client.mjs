@@ -1,17 +1,17 @@
-const EventEmitter = require('events');
-const Long = require('long');
-const Parser = require('./parser');
-const decrypt = require('./utils/decrypt');
-const path = require('path');
-const tls = require('tls');
-const { checkIn } = require('./gcm');
-const {
+import EventEmitter from 'events';
+import Long from 'long';
+import Parser from './parser.mjs';
+import decrypt from './utils/decrypt';
+import path from 'path';
+import tls from 'tls';
+import { checkIn } from './gcm';
+import {
   kMCSVersion,
   kLoginRequestTag,
   kDataMessageStanzaTag,
   kLoginResponseTag,
-} = require('./constants');
-const { load } = require('protobufjs');
+} from './constants.mjs';
+import { load } from 'protobufjs';
 
 const HOST = 'mtalk.google.com';
 const PORT = 5228;
@@ -19,7 +19,7 @@ const MAX_RETRY_TIMEOUT = 15;
 
 let proto = null;
 
-module.exports = class Client extends EventEmitter {
+export default class Client extends EventEmitter {
   static async init() {
     if (proto) {
       return;
@@ -74,7 +74,7 @@ module.exports = class Client extends EventEmitter {
     this._socket.on('connect', this._onSocketConnect);
     this._socket.on('close', this._onSocketClose);
     this._socket.on('error', this._onSocketError);
-    this._socket.connect({ host: HOST, port: PORT });
+    this._socket.connect({ host : HOST, port : PORT });
     this._socket.write(this._loginBuffer());
   }
 
@@ -101,20 +101,20 @@ module.exports = class Client extends EventEmitter {
       this._credentials.gcm.androidId
     ).toString(16);
     const loginRequest = {
-      adaptiveHeartbeat: false,
-      authService: 2,
-      authToken: this._credentials.gcm.securityToken,
-      id: 'chrome-63.0.3234.0',
-      domain: 'mcs.android.com',
-      deviceId: `android-${hexAndroidId}`,
-      networkType: 1,
-      resource: this._credentials.gcm.androidId,
-      user: this._credentials.gcm.androidId,
-      useRmq2: true,
-      setting: [{ name: 'new_vc', value: '1' }],
+      adaptiveHeartbeat    : false,
+      authService          : 2,
+      authToken            : this._credentials.gcm.securityToken,
+      id                   : 'chrome-63.0.3234.0',
+      domain               : 'mcs.android.com',
+      deviceId             : `android-${hexAndroidId}`,
+      networkType          : 1,
+      resource             : this._credentials.gcm.androidId,
+      user                 : this._credentials.gcm.androidId,
+      useRmq2              : true,
+      setting              : [{ name : 'new_vc', value : '1' }],
       // Id of the last notification received
-      clientEvent: [],
-      receivedPersistentId: this._persistentIds,
+      clientEvent          : [],
+      receivedPersistentId : this._persistentIds,
     };
 
     const errorMessage = LoginRequestType.verify(loginRequest);
@@ -140,10 +140,12 @@ module.exports = class Client extends EventEmitter {
     this._retry();
   }
 
+  // eslint-disable-next-line no-unused-vars
   _onSocketError(error) {
     // ignore, the close handler takes care of retry
   }
 
+  // eslint-disable-next-line no-unused-vars
   _onParserError(error) {
     this._retry();
   }
@@ -197,9 +199,9 @@ module.exports = class Client extends EventEmitter {
     this._persistentIds.push(object.persistentId);
     // Send notification
     this.emit('ON_NOTIFICATION_RECEIVED', {
-      notification: message,
+      notification : message,
       // Needs to be saved by the client
-      persistentId: object.persistentId,
+      persistentId : object.persistentId,
     });
   }
-};
+}

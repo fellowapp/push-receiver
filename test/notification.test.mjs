@@ -1,10 +1,10 @@
-const fetch = require('node-fetch');
-const { SENDER_ID, SERVER_KEY } = require('./keys');
-const { register, listen } = require('../src/index');
+import fetch from 'node-fetch';
+import { SENDER_ID, SERVER_KEY } from './keys';
+import { register, listen } from '../src/index';
 
 const NOTIFICATIONS = {
-  SIMPLE: { title: 'Hello world ', body: 'Test' },
-  LARGE: { title: 'Hello world ', body: require('./4kb') },
+  SIMPLE : { title : 'Hello world ', body : 'Test' },
+  LARGE  : { title : 'Hello world ', body : require('./4kb') },
 };
 
 let credentials;
@@ -58,14 +58,14 @@ describe('Parser', function () {
 
 async function send(notification) {
   const response = await fetch('https://fcm.googleapis.com/fcm/send', {
-    method: 'POST',
-    body: JSON.stringify({
-      to: credentials.fcm.token,
-      notification: notification,
+    method : 'POST',
+    body   : JSON.stringify({
+      to           : credentials.fcm.token,
+      notification : notification,
     }),
-    headers: {
-      Authorization: `key=${SERVER_KEY}`,
-      'content-type': 'application/json',
+    headers : {
+      Authorization  : `key=${SERVER_KEY}`,
+      'content-type' : 'application/json',
     },
   });
   try {
@@ -80,14 +80,18 @@ async function send(notification) {
 
 async function receive(n) {
   const received = [];
-  return new Promise(async (resolve) => {
-    const onNotification = (notification) => {
+
+  let onNotification;
+
+  const result = new Promise((resolve) => {
+    onNotification = (notification) => {
       received.push(notification);
       if (received.length === n) {
         resolve(received);
       }
     };
-    credentials.persistentIds = [];
-    client = await listen(credentials, onNotification);
   });
+  credentials.persistentIds = [];
+  client = await listen(credentials, onNotification);
+  return result;
 }

@@ -1,4 +1,4 @@
-const { listen } = require('../../src');
+import { listen } from '../../src';
 
 (async () => {
   try {

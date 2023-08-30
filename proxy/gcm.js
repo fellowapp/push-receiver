@@ -1,10 +1,10 @@
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
-const protobuf = require('protobufjs');
-const httpProxy = require('http-proxy');
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import protobuf from 'protobufjs';
+import httpProxy from 'http-proxy';
 const proxy = httpProxy.createProxyServer({});
-const { warn, info } = require('../src/logger');
+import { warn, info } from '../src/logger';
 
 const HOST = 'https://216.58.198.206';
 let root;

@@ -1,9 +1,11 @@
-const { register } = require('../../src');
-const senderId = require('yargs').argv.senderId;
+import { register } from '../../src';
+import { argv } from 'yargs';
+
+const senderId = argv.senderId;
 
 if (!senderId) {
   console.error('Missing senderId');
-  return;
+  process.exit(170);
 }
 
 (async () => {

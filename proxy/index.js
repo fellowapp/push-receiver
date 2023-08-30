@@ -1,7 +1,7 @@
-const tls = require('tls');
-const fs = require('fs');
-const path = require('path');
-const protobuf = require('protobufjs');
+import tls from 'tls';
+import fs from 'fs';
+import path from 'path';
+import protobuf from 'protobufjs';
 
 const mtalkOptions = {
   key: fs.readFileSync(path.join(__dirname, 'key.pem')),

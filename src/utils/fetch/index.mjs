@@ -1,14 +1,12 @@
-const fetch = require('node-fetch');
-const { waitFor } = require('../timeout');
+import fetch from 'node-fetch';
+import { waitFor } from '../timeout';
 
 // In seconds
 const MAX_RETRY_TIMEOUT = 15;
 // Step in seconds
 const RETRY_STEP = 5;
 
-module.exports = fetchWithRetry;
-
-function fetchWithRetry(...args) {
+export default function fetchWithRetry(...args) {
   return retry(0, ...args);
 }
 
