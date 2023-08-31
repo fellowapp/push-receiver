@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const fetch = require('node-fetch');
+const { fetch } = require('../utils/fetch');
 const { escape } = require('../utils/base64');
 
 const FCM_SUBSCRIBE = 'https://fcm.googleapis.com/fcm/connect/subscribe';
@@ -9,16 +9,16 @@ module.exports = registerFCM;
 
 async function registerFCM({ senderId, token }) {
   const keys = await createKeys();
-  const response = await fetch(FCM_SUBSCRIBE, {
-    method: 'POST',
-    body: new URLSearchParams({
-      authorized_entity: senderId,
-      endpoint: `${FCM_ENDPOINT}/${token}`,
-      encryption_key: keys.publicKey
+  const responseJson = await fetch(FCM_SUBSCRIBE, {
+    method : 'POST',
+    body   : new URLSearchParams({
+      authorized_entity : senderId,
+      endpoint          : `${FCM_ENDPOINT}/${token}`,
+      encryption_key    : keys.publicKey
         .replace(/=/g, '')
         .replace(/\+/g, '-')
         .replace(/\//g, '_'),
-      encryption_auth: keys.authSecret
+      encryption_auth : keys.authSecret
         .replace(/=/g, '')
         .replace(/\+/g, '-')
         .replace(/\//g, '_'),
@@ -26,7 +26,7 @@ async function registerFCM({ senderId, token }) {
   }).then((response) => response.json());
   return {
     keys,
-    fcm: response,
+    fcm : responseJson,
   };
 }
 
@@ -39,9 +39,9 @@ function createKeys() {
         return reject(err);
       }
       return resolve({
-        privateKey: escape(dh.getPrivateKey('base64')),
-        publicKey: escape(dh.getPublicKey('base64')),
-        authSecret: escape(buf.toString('base64')),
+        privateKey : escape(dh.getPrivateKey('base64')),
+        publicKey  : escape(dh.getPublicKey('base64')),
+        authSecret : escape(buf.toString('base64')),
       });
     });
   });
