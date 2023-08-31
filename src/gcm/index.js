@@ -72,10 +72,9 @@ async function postRegister({ androidId, securityToken, body, retry = 0 }) {
   const response = await fetchWithRetry(REGISTER_URL, {
     method  : 'POST',
     headers : {
-      Authorization  : `AidLogin ${androidId}:${securityToken}`,
-      'Content-Type' : 'application/x-www-form-urlencoded',
+      Authorization : `AidLogin ${androidId}:${securityToken}`,
     },
-    form : body,
+    body : new URLSearchParams(body),
   });
   if (response.includes('Error')) {
     console.warn(`Register request has failed with ${response}`);
