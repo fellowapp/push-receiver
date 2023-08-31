@@ -34,21 +34,22 @@ async function checkIn(androidId, securityToken) {
   await loadProtoFile();
   const buffer = getCheckinRequest(androidId, securityToken);
 
-  const response = await fetchWithRetry(CHECKIN_URL, {
+  const responseBuffer = await fetchWithRetry(CHECKIN_URL, {
     method  : 'POST',
     headers : {
       'Content-Type' : 'application/x-protobuf',
     },
     body : buffer,
-  });
+  }).then((response) => response.arrayBuffer());
 
-  const message = AndroidCheckinResponse.decode(response.body);
-  const object = AndroidCheckinResponse.toObject(message, {
+  const typedArrayBuffer = new Uint8Array(responseBuffer);
+
+  const message = AndroidCheckinResponse.decode(typedArrayBuffer);
+  return AndroidCheckinResponse.toObject(message, {
     longs : String,
     enums : String,
     bytes : String,
   });
-  return object;
 }
 
 async function doRegister({ androidId, securityToken }, appId) {
@@ -76,8 +77,9 @@ async function postRegister({ androidId, securityToken, body, retry = 0 }) {
     },
     body : new URLSearchParams(body),
   });
-  if (response.includes('Error')) {
-    console.warn(`Register request has failed with ${response}`);
+  const responseText = await response.text();
+  if (responseText.includes('Error')) {
+    console.warn(`Register request has failed with ${responseText}`);
     if (retry >= 5) {
       throw new Error('GCM register has failed');
     }
@@ -85,7 +87,7 @@ async function postRegister({ androidId, securityToken, body, retry = 0 }) {
     await waitFor(1000);
     return postRegister({ androidId, securityToken, body, retry : retry + 1 });
   }
-  return response;
+  return responseText;
 }
 
 async function loadProtoFile() {

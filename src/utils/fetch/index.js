@@ -15,7 +15,7 @@ module.exports = { fetchWithRetry, fetch };
  * @returns {Promise<Response>}
  */
 async function fetch(url, init) {
-  const loadedFetch = await fetchAsync;
+  const loadedFetch = (await fetchAsync).default;
   return loadedFetch(url, init);
 }
 
