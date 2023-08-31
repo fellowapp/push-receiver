@@ -4,8 +4,8 @@ const path = require('path');
 const protobuf = require('protobufjs');
 
 const mtalkOptions = {
-  key: fs.readFileSync(path.join(__dirname, 'key.pem')),
-  cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
+  key  : fs.readFileSync(path.join(__dirname, 'key.pem')),
+  cert : fs.readFileSync(path.join(__dirname, 'cert.pem')),
 };
 let root;
 
@@ -18,7 +18,9 @@ const server = tls.createServer(mtalkOptions, (socket) => {
     try {
       const LoginRequestType = root.lookupType('mcs_proto.LoginRequest');
       console.log(LoginRequestType.decode(data));
-    } catch (e) {}
+    } catch (e) {
+      /* empty */
+    }
     logBuffer(data);
     console.info('*******');
     if (connected) {
@@ -26,8 +28,8 @@ const server = tls.createServer(mtalkOptions, (socket) => {
     } else {
       proxySocket.connect(
         {
-          host: '64.233.166.188',
-          port: 5228,
+          host : '64.233.166.188',
+          port : 5228,
         },
         () => {
           connected = true;

@@ -12,11 +12,11 @@ function decrypt(object, keys) {
   const dh = crypto.createECDH('prime256v1');
   dh.setPrivateKey(keys.privateKey, 'base64');
   const params = {
-    version: 'aesgcm',
-    authSecret: keys.authSecret,
-    dh: cryptoKey.value.slice(3),
-    privateKey: dh,
-    salt: salt.value.slice(5),
+    version    : 'aesgcm',
+    authSecret : keys.authSecret,
+    dh         : cryptoKey.value.slice(3),
+    privateKey : dh,
+    salt       : salt.value.slice(5),
   };
   const decrypted = ece.decrypt(object.rawData, params);
   return JSON.parse(decrypted);

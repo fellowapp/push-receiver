@@ -10,8 +10,8 @@ const HOST = 'https://216.58.198.206';
 let root;
 
 const options = {
-  key: fs.readFileSync(path.join(__dirname, 'android_key.pem')),
-  cert: fs.readFileSync(path.join(__dirname, 'android_cert.pem')),
+  key  : fs.readFileSync(path.join(__dirname, 'android_key.pem')),
+  cert : fs.readFileSync(path.join(__dirname, 'android_cert.pem')),
 };
 
 proxy.on('proxyRes', (proxyRes, req) => {
@@ -53,7 +53,7 @@ https
       }
       //logBuffer(data);
     });
-    proxy.web(req, res, { target: HOST });
+    proxy.web(req, res, { target : HOST });
   })
   .listen(443);
 
