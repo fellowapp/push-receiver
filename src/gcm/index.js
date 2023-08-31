@@ -1,5 +1,5 @@
 const path = require('path');
-const request = require('../utils/request');
+const { fetchWithRetry } = require('../utils/fetch');
 const protobuf = require('protobufjs');
 const Long = require('long');
 const { waitFor } = require('../utils/timeout');
@@ -8,8 +8,8 @@ const { toBase64 } = require('../utils/base64');
 
 // Hack to fix PHONE_REGISTRATION_ERROR #17 when bundled with webpack
 // https://github.com/dcodeIO/protobuf.js#browserify-integration
-protobuf.util.Long = Long
-protobuf.configure()
+protobuf.util.Long = Long;
+protobuf.configure();
 
 const serverKey = toBase64(Buffer.from(fcmKey));
 
@@ -33,22 +33,23 @@ async function register(appId) {
 async function checkIn(androidId, securityToken) {
   await loadProtoFile();
   const buffer = getCheckinRequest(androidId, securityToken);
-  const body = await request({
-    url     : CHECKIN_URL,
+
+  const responseBuffer = await fetchWithRetry(CHECKIN_URL, {
     method  : 'POST',
     headers : {
       'Content-Type' : 'application/x-protobuf',
     },
-    body     : buffer,
-    encoding : null,
-  });
-  const message = AndroidCheckinResponse.decode(body);
-  const object = AndroidCheckinResponse.toObject(message, {
+    body : buffer,
+  }).then((response) => response.arrayBuffer());
+
+  const typedArrayBuffer = new Uint8Array(responseBuffer);
+
+  const message = AndroidCheckinResponse.decode(typedArrayBuffer);
+  return AndroidCheckinResponse.toObject(message, {
     longs : String,
     enums : String,
     bytes : String,
   });
-  return object;
 }
 
 async function doRegister({ androidId, securityToken }, appId) {
@@ -69,17 +70,16 @@ async function doRegister({ androidId, securityToken }, appId) {
 }
 
 async function postRegister({ androidId, securityToken, body, retry = 0 }) {
-  const response = await request({
-    url     : REGISTER_URL,
+  const response = await fetchWithRetry(REGISTER_URL, {
     method  : 'POST',
     headers : {
-      Authorization  : `AidLogin ${androidId}:${securityToken}`,
-      'Content-Type' : 'application/x-www-form-urlencoded',
+      Authorization : `AidLogin ${androidId}:${securityToken}`,
     },
-    form : body,
+    body : new URLSearchParams(body),
   });
-  if (response.includes('Error')) {
-    console.warn(`Register request has failed with ${response}`);
+  const responseText = await response.text();
+  if (responseText.includes('Error')) {
+    console.warn(`Register request has failed with ${responseText}`);
     if (retry >= 5) {
       throw new Error('GCM register has failed');
     }
@@ -87,7 +87,7 @@ async function postRegister({ androidId, securityToken, body, retry = 0 }) {
     await waitFor(1000);
     return postRegister({ androidId, securityToken, body, retry : retry + 1 });
   }
-  return response;
+  return responseText;
 }
 
 async function loadProtoFile() {

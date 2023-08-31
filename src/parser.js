@@ -105,8 +105,9 @@ module.exports = class Parser extends EventEmitter {
     if (this._data.length < minBytesNeeded) {
       // TODO(ibash) set a timeout and check for socket disconnect
       DEBUG(
-        `Socket read finished prematurely. Waiting for ${minBytesNeeded -
-          this._data.length} more bytes`
+        `Socket read finished prematurely. Waiting for ${
+          minBytesNeeded - this._data.length
+        } more bytes`
       );
       this._isWaitingForData = true;
       return;
@@ -204,7 +205,7 @@ module.exports = class Parser extends EventEmitter {
     // Messages with no content are valid; just use the default protobuf for
     // that tag.
     if (this._messageSize === 0) {
-      this.emit('message', {tag: this._messageTag, object: {}});
+      this.emit('message', { tag : this._messageTag, object : {} });
       this._getNextMessage();
       return;
     }
@@ -212,9 +213,7 @@ module.exports = class Parser extends EventEmitter {
     if (this._data.length < this._messageSize) {
       // Continue reading data.
       DEBUG(
-        `Continuing data read. Buffer size is ${this._data.length}, expecting ${
-          this._messageSize
-        }`
+        `Continuing data read. Buffer size is ${this._data.length}, expecting ${this._messageSize}`
       );
       this._state = MCS_PROTO_BYTES;
       this._waitForData();
@@ -230,7 +229,7 @@ module.exports = class Parser extends EventEmitter {
       bytes : Buffer,
     });
 
-    this.emit('message', {tag: this._messageTag, object: object});
+    this.emit('message', { tag : this._messageTag, object : object });
 
     if (this._messageTag === kLoginResponseTag) {
       if (this._handshakeComplete) {

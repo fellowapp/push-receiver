@@ -1,17 +1,14 @@
 {
   "name": "push-receiver",
   "version": "2.1.1",
-  "description":
-    "A module to subscribe to GCM/FCM and receive notifications within a node process.",
+  "description": "A module to subscribe to GCM/FCM and receive notifications within a node process.",
   "main": "src/index.js",
   "scripts": {
     "start": "node scripts/listen",
     "register": "node scripts/register",
     "send": "node scripts/send",
-    "pretty":
-      "prettier-eslint --single-quote --trailing-comma es5 --write \"**/*.js\" \"**/*.json\"",
-    "pretty:check":
-      "prettier-eslint --single-quote --trailing-comma es5 --list-different --log-level silent \"**/*.js\" \"**/*.json\"",
+    "pretty": "prettier-eslint --single-quote --trailing-comma es5 --write '**/*.js'",
+    "pretty:check": "prettier-eslint --single-quote --trailing-comma es5 --list-different --log-level silent \"**/*.js\" \"**/*.json\"",
     "lint": "eslint 'src/**/*.js'",
     "lint:fix": "eslint 'src/**/*.js' --fix",
     "test": "jest",
@@ -22,7 +19,9 @@
       "eslint --fix",
       "prettier-eslint --single-quote --trailing-comma es5 --write"
     ],
-    "*.json": ["prettier-eslint --single-quote --trailing-comma es5 --write"]
+    "*.json": [
+      "prettier-eslint --single-quote --trailing-comma es5 --write"
+    ]
   },
   "repository": {
     "type": "git",
@@ -45,24 +44,23 @@
   },
   "homepage": "https://github.com/MatthieuLemoine/push-receiver#readme",
   "devDependencies": {
-    "babel-eslint": "^7.2.3",
-    "eslint": "^4.4.1",
-    "eslint-plugin-jest": "^20.0.3",
-    "http-proxy": "^1.16.2",
+    "@babel/eslint-parser": "^7.22.9",
+    "eslint": "^8.46.0",
+    "eslint-plugin-jest": "^27.2.3",
+    "http-proxy": "^1.18.1",
     "husky": "^0.14.3",
-    "jest": "^22.2.2",
-    "lint-staged": "^6.1.0",
-    "prettier": "^1.6.1",
-    "prettier-eslint": "^7.0.0",
-    "prettier-eslint-cli": "^4.3.0",
-    "yargs": "^10.0.3"
+    "jest": "^29.6.2",
+    "lint-staged": "^13.2.3",
+    "prettier": "^2.8.8",
+    "prettier-eslint": "^15.0.1",
+    "prettier-eslint-cli": "^7.1.0",
+    "yargs": "^17.7.2"
   },
   "dependencies": {
-    "http_ece": "^1.0.5",
-    "long": "^3.2.0",
-    "protobufjs": "^6.8.0",
-    "request": "^2.81.0",
-    "request-promise": "^4.2.1",
-    "uuid": "^3.1.0"
+    "http_ece": "^1.1.0",
+    "long": "^5.2.3",
+    "node-fetch": "^3.3.2",
+    "protobufjs": "^7.2.4",
+    "uuid": "^9.0.0"
   }
 }

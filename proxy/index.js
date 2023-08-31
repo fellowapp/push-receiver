@@ -9,16 +9,18 @@ const mtalkOptions = {
 };
 let root;
 
-const server = tls.createServer(mtalkOptions, socket => {
+const server = tls.createServer(mtalkOptions, (socket) => {
   console.info('socket connected');
   const proxySocket = new tls.TLSSocket();
   let connected = false;
-  socket.on('data', data => {
+  socket.on('data', (data) => {
     console.info('SOCKET DATA :');
     try {
       const LoginRequestType = root.lookupType('mcs_proto.LoginRequest');
       console.log(LoginRequestType.decode(data));
-    } catch (e) {}
+    } catch (e) {
+      /* empty */
+    }
     logBuffer(data);
     console.info('*******');
     if (connected) {
@@ -36,7 +38,7 @@ const server = tls.createServer(mtalkOptions, socket => {
       );
     }
   });
-  socket.on('error', error => {
+  socket.on('error', (error) => {
     console.info('Error');
     console.info(error);
   });
@@ -45,13 +47,13 @@ const server = tls.createServer(mtalkOptions, socket => {
     proxySocket.end();
   });
   proxySocket.on('close', () => console.warn('Socket closed'));
-  proxySocket.on('data', buffer => {
+  proxySocket.on('data', (buffer) => {
     console.warn('PROXY DATA :');
     logBuffer(buffer);
     console.warn('*******');
     socket.write(buffer);
   });
-  proxySocket.on('error', err => {
+  proxySocket.on('error', (err) => {
     console.warn('proxy error');
     console.warn(err);
   });
@@ -65,7 +67,7 @@ server.listen(5228, () => {
 });
 
 loadProtoFile()
-  .then(r => (root = r))
+  .then((r) => (root = r))
   .catch(console.error);
 
 function loadProtoFile() {

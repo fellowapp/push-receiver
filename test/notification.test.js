@@ -1,4 +1,4 @@
-const request = require('request-promise');
+const { fetch } = require('../src/utils/fetch');
 const { SENDER_ID, SERVER_KEY } = require('./keys');
 const { register, listen } = require('../src/index');
 
@@ -9,17 +9,17 @@ const NOTIFICATIONS = {
 
 let credentials;
 let client;
-describe('Parser', function() {
-  beforeEach(async function() {
+describe('Parser', function () {
+  beforeEach(async function () {
     credentials = await register(SENDER_ID);
   });
 
-  afterEach(async function() {
+  afterEach(async function () {
     client.destroy();
     credentials = null;
   });
 
-  it('should receive a simple notification', async function() {
+  it('should receive a simple notification', async function () {
     await send(NOTIFICATIONS.SIMPLE);
     const notifications = await receive(1);
     expect(notifications.length).toEqual(1);
@@ -28,7 +28,7 @@ describe('Parser', function() {
     );
   });
 
-  it('should receive a large notification', async function() {
+  it('should receive a large notification', async function () {
     await send(NOTIFICATIONS.LARGE);
     const notifications = await receive(1);
     expect(notifications.length).toEqual(1);
@@ -37,7 +37,7 @@ describe('Parser', function() {
     );
   });
 
-  it('should receive multiple notifications', async function() {
+  it('should receive multiple notifications', async function () {
     await send(NOTIFICATIONS.SIMPLE);
     await send(NOTIFICATIONS.LARGE);
     await send(NOTIFICATIONS.SIMPLE);
@@ -57,15 +57,16 @@ describe('Parser', function() {
 });
 
 async function send(notification) {
-  const response = await request({
+  const response = await fetch('https://fcm.googleapis.com/fcm/send', {
     method : 'POST',
-    url    : 'https://fcm.googleapis.com/fcm/send',
-    json   : true,
-    body   : {
+    body   : JSON.stringify({
       to           : credentials.fcm.token,
       notification : notification,
+    }),
+    headers : {
+      Authorization  : `key=${SERVER_KEY}`,
+      'content-type' : 'application/json',
     },
-    headers : { Authorization : `key=${SERVER_KEY}` },
   });
   try {
     expect(response.success).toEqual(1);
@@ -79,14 +80,18 @@ async function send(notification) {
 
 async function receive(n) {
   const received = [];
-  return new Promise(async resolve => {
-    const onNotification = notification => {
+
+  let onNotification;
+
+  const result = new Promise((resolve) => {
+    onNotification = (notification) => {
       received.push(notification);
       if (received.length === n) {
         resolve(received);
       }
     };
-    credentials.persistentIds = [];
-    client = await listen(credentials, onNotification);
   });
+  credentials.persistentIds = [];
+  client = await listen(credentials, onNotification);
+  return result;
 }

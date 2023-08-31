@@ -15,7 +15,7 @@ const options = {
 };
 
 proxy.on('proxyRes', (proxyRes, req) => {
-  proxyRes.on('data', data => {
+  proxyRes.on('data', (data) => {
     info('REQUEST RESPONSE :');
     try {
       if (req.url === '/checkin') {
@@ -37,7 +37,7 @@ proxy.on('proxyRes', (proxyRes, req) => {
 https
   .createServer(options, (req, res) => {
     console.log(req.url);
-    req.on('data', data => {
+    req.on('data', (data) => {
       info('REQUEST DATA :');
       try {
         if (req.url === '/checkin') {
@@ -58,7 +58,7 @@ https
   .listen(443);
 
 loadProtoFile()
-  .then(r => (root = r))
+  .then((r) => (root = r))
   .catch(console.error);
 
 function loadProtoFile() {
